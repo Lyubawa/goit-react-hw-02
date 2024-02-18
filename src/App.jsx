@@ -6,18 +6,18 @@ import Notification from './components/Notification/Notification'
 import { useEffect, useState } from 'react'
 
 
-const getInitialClicks = () => {
-  const savedClicks = window.localStorage.getItem("my-clicks");
-  return savedClicks !== 0 ? JSON.parse(savedClicks) : {
-    good: 0,
-    neutral: 0,
-    bad: 0
-  };
-}
-
-
 export default function App() {
-  const [clicks, setClicks] = useState(getInitialClicks());
+  const [clicks, setClicks] = useState(() => {
+    const savedClicks = window.localStorage.getItem("my-clicks");
+    if (savedClicks !== null) {
+      return JSON.parse(savedClicks);
+    }
+    return {
+      good: 0,
+      neutral: 0,
+      bad: 0
+    };
+  });
   const updateFeedback = feedbackType => {
     setClicks({
       ...clicks,
