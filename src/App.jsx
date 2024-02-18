@@ -2,27 +2,52 @@ import './App.css'
 import Description from './components/Description/Description'
 import Options from './components/Options/Options'
 import Feedback from './components/Feedback/Feedback'
-// import { useState } from 'react'
+import Notification from './components/Notification/Notification'
+import { useEffect, useState } from 'react'
+
+
+const getInitialClicks = () => {
+  const savedClicks = window.localStorage.getItem("my-clicks");
+  return savedClicks !== 0 ? JSON.parse(savedClicks) : {
+    good: 0,
+    neutral: 0,
+    bad: 0
+  };
+}
 
 
 export default function App() {
-  // const [clicks, setClicks] = useState(() => {
-  //   good: 0,
-  //   neutral: 0,
-  //   bad: 0
-  // });
-  // const handleClick = () => {
-  //   setClicks(clicks + 1)
-  // };
+  const [clicks, setClicks] = useState(getInitialClicks);
+  const updateFeedback = feedbackType => {
+    setClicks({
+      ...clicks,
+      [feedbackType]: clicks[feedbackType] + 1
+    });
+  };
 
+  useEffect(() => {
+  window.localStorage.setItem("my-clicks", JSON.stringify(clicks))
+}, [clicks])
+
+const totalFeedback = clicks.good + clicks.neutral + clicks.bad;
+
+const resetFeedback = () => {
+    setClicks({
+    good: 0,
+    neutral: 0,
+    bad: 0
+  })
+}
+  
+const perPositiveFeedback = Math.round(((clicks.good + clicks.neutral) / totalFeedback) * 100)
+  
   return (
     <>
     <Description />
-      <Options
-      // <button onClick={() => setCount((count) => count + 1)}></button>
-      />
-    <Feedback />
+    <Options updateFeedback={updateFeedback} resetFeedback={resetFeedback} totalFeedback={totalFeedback} />
+    {totalFeedback !== 0 ? <Feedback clicks={clicks} totalFeedback={totalFeedback} perPositiveFeedback={perPositiveFeedback} /> : <Notification/>}
     </>
+    
   )
 }
 
