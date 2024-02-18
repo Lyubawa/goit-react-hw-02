@@ -17,7 +17,7 @@ const getInitialClicks = () => {
 
 
 export default function App() {
-  const [clicks, setClicks] = useState(getInitialClicks);
+  const [clicks, setClicks] = useState(getInitialClicks());
   const updateFeedback = feedbackType => {
     setClicks({
       ...clicks,
